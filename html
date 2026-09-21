@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carlow Section Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Welcome to Carlow Portal</h1>
+
+  <!-- Login Form -->
+  <div id="loginBox">
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <!-- Upload Section (hidden until login) -->
+  <div id="uploadBox" style="display:none;">
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="myFile" required>
+      <button type="submit">Upload File</button>
+    </form>
+
+    <h2>Uploaded Files</h2>
+    <ul id="fileList"></ul>
+  </div>
+
+  <script>
+    // Simple login check
+    const validUsers = {
+      "teacher": "1234",
+      "student": "abcd"
+    };
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (validUsers[user] === pass) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("uploadBox").style.display = "block";
+        loadFiles();
+      } else {
+        alert("Invalid login!");
+      }
+    });
+
+    async function loadFiles() {
+      const response = await fetch("/files");
+      const files = await response.json();
+      const list = document.getElementById("fileList");
+      list.innerHTML = "";
+      files.forEach(file => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="/uploads/${file}" target="_blank">${file}</a>`;
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
